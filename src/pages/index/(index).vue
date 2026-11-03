@@ -659,8 +659,8 @@
                     >
                       {{
                         req.format === 'both'
-                          ? 'PDF + Physical Copy'
-                          : 'Digital PDF'
+                          ? 'e-Document + Certified Hard Copy'
+                          : 'e-Document (PDF)'
                       }}
                     </span>
                   </div>
@@ -822,8 +822,8 @@
                   >
                     {{
                       req.format === 'both'
-                        ? 'PDF + Physical Copy'
-                        : 'Digital PDF'
+                        ? 'e-Document + Certified Hard Copy'
+                        : 'e-Document (PDF)'
                     }}
                   </span>
                 </div>
@@ -1311,10 +1311,10 @@
             </div>
           </div>
 
-          <!-- Physical Copy Needed? (Yes / No) -->
+          <!-- Document Issuance & Delivery Mode -->
           <div class="up-card" style="text-align: left">
             <label class="up-input-label" style="margin-bottom: 8px">
-              Do You Also Need a Physical Printed Copy?
+              Document Issuance &amp; Delivery Mode
             </label>
             <div class="up-doc-grid">
               <button
@@ -1327,10 +1327,10 @@
                 <div
                   style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
                 >
-                  No — Digital PDF Only
+                  Digital e-Document Only
                 </div>
                 <div style="font-size: 0.72rem; color: #64748b">
-                  Download QR-verified PDF only
+                  Official QR-verified PDF for instant download
                 </div>
               </button>
 
@@ -1344,10 +1344,10 @@
                 <div
                   style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
                 >
-                  Yes — Physical Copy Too
+                  Digital + Certified Hard Copy
                 </div>
                 <div style="font-size: 0.72rem; color: #64748b">
-                  Digital PDF + Printed hard copy
+                  e-Document PDF + Embossed print for collection
                 </div>
               </button>
             </div>
@@ -1365,10 +1365,10 @@
                 line-height: 1.45;
               "
             >
-              <strong>Physical Copy Collection:</strong> Your printed &amp;
-              stamped hard copy will be prepared at the
-              <strong>Registrar Office (Counter #02)</strong> in addition to
-              your instant digital PDF download.
+              <strong>Hard Copy Requisition:</strong> An embossed,
+              Registrar-certified physical copy will be prepared by the Academic
+              Establishment Division for counter collection at
+              <strong>Examinations &amp; Registrar Unit (Counter #02)</strong>.
             </div>
           </div>
 
@@ -1556,10 +1556,10 @@
             </p>
           </div>
 
-          <!-- Physical Copy Option on Download / Track Screen -->
+          <!-- Document Issuance & Delivery Mode on Track Screen -->
           <div class="up-card" style="text-align: left">
             <label class="up-input-label" style="margin-bottom: 8px">
-              Do You Also Need a Physical Printed Copy?
+              Document Issuance &amp; Delivery Mode
             </label>
             <div class="up-doc-grid">
               <button
@@ -1572,10 +1572,10 @@
                 <div
                   style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
                 >
-                  No — Digital PDF Only
+                  Digital e-Document Only
                 </div>
                 <div style="font-size: 0.72rem; color: #64748b">
-                  Download QR-verified PDF only
+                  Official QR-verified PDF for instant download
                 </div>
               </button>
 
@@ -1589,10 +1589,10 @@
                 <div
                   style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
                 >
-                  Yes — Physical Copy Too
+                  Digital + Certified Hard Copy
                 </div>
                 <div style="font-size: 0.72rem; color: #64748b">
-                  Digital PDF + Printed hard copy
+                  e-Document PDF + Embossed print for collection
                 </div>
               </button>
             </div>
@@ -1610,10 +1610,12 @@
                 line-height: 1.45;
               "
             >
-              <strong>✓ Physical Copy Requested:</strong> Collect your printed
-              &amp; stamped hard copy at the
-              <strong>Registrar Office (Counter #02)</strong> with your Student
-              ID ({{ activeRequest.studentId || loginId }}).
+              <strong>✓ Certified Hard Copy Requisitioned:</strong> Collect your
+              embossed physical document at the
+              <strong>Examinations &amp; Registrar Unit (Counter #02)</strong>
+              upon presenting Student ID ({{
+                activeRequest.studentId || loginId
+              }}).
             </div>
           </div>
         </div>
@@ -2921,8 +2923,8 @@ function setPhysicalCopyOption(req, needPhysical) {
   req.format = needPhysical ? 'both' : 'digital'
   triggerToast(
     needPhysical
-      ? 'Physical printed copy requested (Registrar Counter #02)'
-      : 'Updated to Digital PDF only'
+      ? 'Issuance updated: Digital + Certified Hard Copy (Registrar Counter #02)'
+      : 'Issuance updated: Digital e-Document Only'
   )
 }
 
