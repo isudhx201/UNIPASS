@@ -295,6 +295,12 @@
     <main
       class="up-main-container"
       :class="{ 'is-login': !isLoggedIn && currentView === 'login' }"
+      :style="{
+        transform:
+          canGoBack && isSwipingBack
+            ? `translateX(${Math.round(swipeDistance * 0.18)}px)`
+            : ''
+      }"
     >
       <!-- ========================================================
            SCREEN 1: LOGIN (INITIAL LANDING VIEW)
@@ -478,18 +484,38 @@
           "
         >
           <div style="text-align: left">
-            <h1 style="font-size: 1.35rem; color: #0f172a">
+            <h1
+              style="
+                font-size: 1.35rem;
+                color: #ffffff;
+                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+              "
+            >
               Hello, {{ studentName }}
             </h1>
-            <p style="font-size: 0.78rem; color: #64748b">
-              Student ID: <strong>{{ loginId }}</strong>
+            <p style="font-size: 0.78rem; color: #bfdbfe">
+              Student ID: <strong style="color: #ffffff">{{ loginId }}</strong>
             </p>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap">
-            <span class="up-badge up-badge-blue">
+            <span
+              class="up-badge"
+              style="
+                background: rgba(255, 255, 255, 0.2);
+                color: #ffffff;
+                border: 1px solid rgba(255, 255, 255, 0.35);
+              "
+            >
               Total: {{ existingRequests.length }}
             </span>
-            <span class="up-badge up-badge-success">
+            <span
+              class="up-badge"
+              style="
+                background: rgba(34, 197, 94, 0.25);
+                color: #86efac;
+                border: 1px solid rgba(34, 197, 94, 0.4);
+              "
+            >
               Ready: {{ readyCount }}
             </span>
           </div>
@@ -1805,6 +1831,31 @@
       </div>
     </div>
 
+    <!-- Swipe Back Floating Visual Pill -->
+    <div
+      v-if="canGoBack && isSwipingBack"
+      class="up-swipe-back-pill"
+      :class="{ 'is-ready': swipeReady }"
+      :style="{
+        transform: `translate3d(${Math.max(0, swipeDistance - 38)}px, -50%, 0) scale(${swipeReady ? 1.08 : 0.94})`
+      }"
+      aria-hidden="true"
+    >
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M19 12H5" />
+        <path d="m12 19-7-7 7-7" />
+      </svg>
+    </div>
+
     <!-- FLOATING DOWNLOAD TOAST NOTIFICATION -->
     <div class="unipass-toast" :class="{ show: showToast }" role="status">
       <svg width="20" height="20" style="color: #4ade80; flex-shrink: 0">
@@ -1819,43 +1870,115 @@
         padding: 16px;
         text-align: center;
         font-size: 0.75rem;
-        border-top: 1px solid rgba(148, 163, 184, 0.2);
-      "
-      :style="
-        !isLoggedIn && currentView === 'login'
-          ? 'color: #94a3b8'
-          : 'color: #64748b; background: #ffffff'
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(9, 29, 88, 0.75);
+        backdrop-filter: blur(12px);
+        color: #bfdbfe;
       "
     >
       UNIPASS — University of Vavuniya Academic Document Portal •
-      <strong
-        :style="
-          !isLoggedIn && currentView === 'login'
-            ? 'color: #ffffff'
-            : 'color: #0f172a'
-        "
-      >
-        “No Queue, Just Click”
-      </strong>
+      <strong style="color: #ffffff"> “No Queue, Just Click” </strong>
     </footer>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+
+// =========================================================================
+// SESSION PERSISTENCE (PRESERVES LOGIN & EXACT VIEW ON PAGE RELOAD)
+// =========================================================================
+const SESSION_STORAGE_KEY = 'unipass_auth_session_v2'
+
+function loadSavedSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY)
+    if (raw) {
+      const data = JSON.parse(raw)
+      if (data && typeof data === 'object') {
+        const loggedIn = Boolean(data.isLoggedIn)
+        const role = data.activeRole === 'admin' ? 'admin' : 'student'
+        const lRole = data.loginRole === 'admin' ? 'admin' : 'student'
+        let view =
+          typeof data.currentView === 'string' ? data.currentView : 'login'
+        if (!loggedIn && view !== 'verify') {
+          view = 'login'
+        }
+        if (loggedIn && (view === 'login' || !view)) {
+          view = role === 'admin' ? 'admin' : 'dashboard'
+        }
+        const history = Array.isArray(data.viewHistory) ? data.viewHistory : []
+        return {
+          isLoggedIn: loggedIn,
+          activeRole: role,
+          loginRole: lRole,
+          currentView: view,
+          viewHistory: history,
+          studentName: data.studentName || 'Nimal Perera',
+          loginId: data.loginId || 'V-021458'
+        }
+      }
+    }
+  } catch {
+    // fallback on storage error
+  }
+  return {
+    isLoggedIn: false,
+    activeRole: 'student',
+    loginRole: 'student',
+    currentView: 'login',
+    viewHistory: [],
+    studentName: 'Nimal Perera',
+    loginId: 'V-021458'
+  }
+}
+
+const savedSession = loadSavedSession()
 
 // Authentication & Role State
-const isLoggedIn = ref(false)
-const loginRole = ref('student') // Role selected on Login form: 'student' | 'admin'
-const activeRole = ref('student') // Active logged-in role: 'student' | 'admin'
-const currentView = ref('login') // 'login' | 'dashboard' | 'requests' | 'select' | 'form' | 'track' | 'verify' | 'admin' | 'notifications'
-const viewHistory = ref([])
+const isLoggedIn = ref(savedSession.isLoggedIn)
+const loginRole = ref(savedSession.loginRole)
+const activeRole = ref(savedSession.activeRole)
+const currentView = ref(savedSession.currentView)
+const viewHistory = ref(savedSession.viewHistory)
 
-const studentName = ref('Nimal Perera')
-const loginId = ref('V-021458')
+const studentName = ref(savedSession.studentName)
+const loginId = ref(savedSession.loginId)
 const adminLoginId = ref('ADMIN-UOV-01')
 const loginPw = ref('••••••••••')
 const isAuthenticating = ref(false)
+
+// Preview Modal State (hoisted for back & gesture handling)
+const showPreviewModal = ref(false)
+const previewDataUrl = ref('')
+const previewTargetReq = ref(null)
+
+function saveSession() {
+  try {
+    localStorage.setItem(
+      SESSION_STORAGE_KEY,
+      JSON.stringify({
+        isLoggedIn: isLoggedIn.value,
+        activeRole: activeRole.value,
+        loginRole: loginRole.value,
+        currentView: currentView.value,
+        viewHistory: viewHistory.value,
+        studentName: studentName.value,
+        loginId: loginId.value
+      })
+    )
+  } catch {
+    // ignore
+  }
+}
+
+watch(
+  [isLoggedIn, activeRole, loginRole, currentView, viewHistory],
+  () => {
+    saveSession()
+  },
+  { deep: true }
+)
 
 // =========================================================================
 // DYNAMIC PER-DOCUMENT ISO/IEC 18004 QR CODE GENERATOR (VERSION 2-L, 25x25)
@@ -2232,10 +2355,20 @@ function navigateTo(targetView) {
   if (currentView.value !== targetView) {
     viewHistory.value.push(currentView.value)
     currentView.value = targetView
+    saveSession()
+    try {
+      window.history.pushState({ unipassView: targetView }, '')
+    } catch {
+      // ignore
+    }
   }
 }
 
 function goBack() {
+  if (showPreviewModal.value) {
+    showPreviewModal.value = false
+    return
+  }
   if (currentView.value === 'verify') {
     stopCameraStream()
   }
@@ -2258,6 +2391,12 @@ function goBack() {
       continue
     }
     currentView.value = prev
+    saveSession()
+    try {
+      window.history.replaceState({ unipassView: prev }, '')
+    } catch {
+      // ignore
+    }
     return
   }
   // Fallback destination if history stack is empty
@@ -2268,6 +2407,172 @@ function goBack() {
   } else {
     currentView.value = 'dashboard'
   }
+  saveSession()
+  try {
+    window.history.replaceState({ unipassView: currentView.value }, '')
+  } catch {
+    // ignore
+  }
+}
+
+const canGoBack = computed(() => {
+  if (showPreviewModal.value) return true
+  if (viewHistory.value.length > 0) return true
+  if (!isLoggedIn.value) {
+    return currentView.value !== 'login'
+  }
+  if (activeRole.value === 'admin') {
+    return currentView.value !== 'admin'
+  }
+  return currentView.value !== 'dashboard'
+})
+
+function handlePopState(e) {
+  if (e.state && e.state.unipassView) {
+    const target = e.state.unipassView
+    if (currentView.value === 'verify' && target !== 'verify') {
+      stopCameraStream()
+    }
+    currentView.value = target
+    saveSession()
+  } else if (canGoBack.value) {
+    goBack()
+  }
+}
+
+// =========================================================================
+// SWIPE-TO-BACK GESTURE SUPPORT (MOBILE TOUCH & DESKTOP DRAG)
+// =========================================================================
+const isSwipingBack = ref(false)
+const swipeDistance = ref(0)
+const swipeReady = ref(false)
+
+let touchStartX = 0
+let touchStartY = 0
+let isTrackingTouch = false
+
+function handleTouchStart(e) {
+  if (!canGoBack.value) return
+  if (!e.touches || e.touches.length !== 1) return
+
+  const touch = e.touches[0]
+  // Must start from left side (within 80px of screen edge)
+  if (touch.clientX > 80) return
+
+  const target = e.target
+  if (target && target.closest && target.closest('input[type="range"]')) return
+
+  touchStartX = touch.clientX
+  touchStartY = touch.clientY
+  isTrackingTouch = true
+  isSwipingBack.value = false
+  swipeDistance.value = 0
+  swipeReady.value = false
+}
+
+function handleTouchMove(e) {
+  if (!isTrackingTouch || !e.touches || e.touches.length !== 1) return
+
+  const touch = e.touches[0]
+  const deltaX = touch.clientX - touchStartX
+  const deltaY = touch.clientY - touchStartY
+
+  // Cancel if vertical scrolling is dominant
+  if (Math.abs(deltaY) > Math.abs(deltaX) && deltaX < 24) {
+    isTrackingTouch = false
+    isSwipingBack.value = false
+    return
+  }
+
+  // Moving horizontally rightwards from the edge
+  if (deltaX > 8) {
+    isSwipingBack.value = true
+    swipeDistance.value = Math.min(deltaX, 130)
+    swipeReady.value = deltaX >= 55
+  } else {
+    isSwipingBack.value = false
+    swipeReady.value = false
+  }
+}
+
+function handleTouchEnd() {
+  if (!isTrackingTouch) return
+  isTrackingTouch = false
+
+  if (isSwipingBack.value && swipeReady.value) {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try {
+        navigator.vibrate(20)
+      } catch {
+        // ignore
+      }
+    }
+    goBack()
+  }
+  isSwipingBack.value = false
+  swipeDistance.value = 0
+  swipeReady.value = false
+}
+
+function handleTouchCancel() {
+  isTrackingTouch = false
+  isSwipingBack.value = false
+  swipeDistance.value = 0
+  swipeReady.value = false
+}
+
+let pointerStartX = 0
+let pointerStartY = 0
+let isTrackingPointer = false
+
+function handlePointerDown(e) {
+  if (e.pointerType === 'touch') return // touch listeners handle mobile smoothly
+  if (!canGoBack.value) return
+  if (e.clientX > 60) return
+
+  const target = e.target
+  if (target && target.closest && target.closest('input, textarea, button'))
+    return
+
+  pointerStartX = e.clientX
+  pointerStartY = e.clientY
+  isTrackingPointer = true
+}
+
+function handlePointerMove(e) {
+  if (!isTrackingPointer || e.pointerType === 'touch') return
+  const deltaX = e.clientX - pointerStartX
+  const deltaY = e.clientY - pointerStartY
+
+  if (Math.abs(deltaY) > Math.abs(deltaX) && deltaX < 24) {
+    isTrackingPointer = false
+    isSwipingBack.value = false
+    return
+  }
+
+  if (deltaX > 8) {
+    isSwipingBack.value = true
+    swipeDistance.value = Math.min(deltaX, 130)
+    swipeReady.value = deltaX >= 55
+  }
+}
+
+function handlePointerUp() {
+  if (!isTrackingPointer) return
+  isTrackingPointer = false
+  if (isSwipingBack.value && swipeReady.value) {
+    goBack()
+  }
+  isSwipingBack.value = false
+  swipeDistance.value = 0
+  swipeReady.value = false
+}
+
+function handlePointerCancel() {
+  isTrackingPointer = false
+  isSwipingBack.value = false
+  swipeDistance.value = 0
+  swipeReady.value = false
 }
 
 function openRequestsWithFilter(filterName) {
@@ -2402,6 +2707,12 @@ function login() {
     activeRole.value = loginRole.value
     viewHistory.value = []
     currentView.value = activeRole.value === 'admin' ? 'admin' : 'dashboard'
+    saveSession()
+    try {
+      window.history.pushState({ unipassView: currentView.value }, '')
+    } catch {
+      // ignore
+    }
   }, 400)
 }
 
@@ -2410,6 +2721,12 @@ function logout() {
   isLoggedIn.value = false
   viewHistory.value = []
   currentView.value = 'login'
+  saveSession()
+  try {
+    window.history.pushState({ unipassView: 'login' }, '')
+  } catch {
+    // ignore
+  }
 }
 
 function openPublicVerifier() {
@@ -3087,11 +3404,6 @@ function downloadPdfForRequest(req) {
   triggerToast(`Downloaded: ${fileName} (QR: ${getQrCodeValue(target)})`)
 }
 
-// Preview Modal State
-const showPreviewModal = ref(false)
-const previewDataUrl = ref('')
-const previewTargetReq = ref(null)
-
 function previewDocumentModal(req) {
   const target = req || activeRequest.value
   previewTargetReq.value = target
@@ -3493,7 +3805,40 @@ function stopCameraStream() {
   cameraQrLocked.value = false
 }
 
+onMounted(() => {
+  window.addEventListener('touchstart', handleTouchStart, { passive: true })
+  window.addEventListener('touchmove', handleTouchMove, { passive: true })
+  window.addEventListener('touchend', handleTouchEnd, { passive: true })
+  window.addEventListener('touchcancel', handleTouchCancel, { passive: true })
+
+  window.addEventListener('pointerdown', handlePointerDown, { passive: true })
+  window.addEventListener('pointermove', handlePointerMove, { passive: true })
+  window.addEventListener('pointerup', handlePointerUp, { passive: true })
+  window.addEventListener('pointercancel', handlePointerCancel, {
+    passive: true
+  })
+
+  window.addEventListener('popstate', handlePopState)
+
+  try {
+    window.history.replaceState({ unipassView: currentView.value }, '')
+  } catch {
+    // ignore
+  }
+})
+
 onUnmounted(() => {
   stopCameraStream()
+  window.removeEventListener('touchstart', handleTouchStart)
+  window.removeEventListener('touchmove', handleTouchMove)
+  window.removeEventListener('touchend', handleTouchEnd)
+  window.removeEventListener('touchcancel', handleTouchCancel)
+
+  window.removeEventListener('pointerdown', handlePointerDown)
+  window.removeEventListener('pointermove', handlePointerMove)
+  window.removeEventListener('pointerup', handlePointerUp)
+  window.removeEventListener('pointercancel', handlePointerCancel)
+
+  window.removeEventListener('popstate', handlePopState)
 })
 </script>

@@ -1,12 +1,20 @@
 :root {
+  --up-royal: #1d4ed8;
+  --up-royal-2: #2563eb;
+  --up-royal-3: #3b82f6;
+  --up-royal-dark: #1e3a8a;
+  --up-navy: #0b1f4d;
+  --up-sky: #bfdbfe;
+  --up-ice: #eff6ff;
+
   --up-primary: #1d4ed8;
   --up-primary-hover: #1e40af;
   --up-primary-light: #eff6ff;
-  --up-bg: #f8fafc;
-  --up-surface: #ffffff;
-  --up-border: #e2e8f0;
-  --up-text: #0f172a;
-  --up-text-sub: #475569;
+  --up-bg: #0b2265;
+  --up-surface: rgba(255, 255, 255, 0.94);
+  --up-border: #dbeafe;
+  --up-text: #0b1f4d;
+  --up-text-sub: #1e293b;
   --up-text-muted: #64748b;
   --up-font:
     'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -29,10 +37,17 @@ body {
   padding: 0;
   width: 100%;
   max-width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   font-family: var(--up-font) !important;
-  color: var(--up-text);
-  background-color: var(--up-bg);
+  color: #ffffff;
+  background-color: #0b2265;
+  background-image:
+    radial-gradient(1100px 650px at 15% 10%, #2563eb 0%, transparent 60%),
+    radial-gradient(900px 600px at 85% 90%, #1e3a8a 0%, transparent 60%),
+    linear-gradient(165deg, #091d58 0%, #1d4ed8 50%, #1e3a8a 100%);
+  background-attachment: fixed;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   line-height: 1.5;
@@ -60,37 +75,38 @@ p {
 }
 
 /* =========================================================================
-   CLEAN, MINIMAL APP SHELL
+   ROYAL BLUE APP SHELL
    ========================================================================= */
 .up-app-shell {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background-color: var(--up-bg);
+  background: transparent;
+  color: #ffffff;
 }
 
 .up-app-shell.is-auth-view {
-  background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%);
+  background: transparent;
   color: #ffffff;
 }
 
 /* =========================================================================
-   CLEAN TOP HEADER
+   FROSTED ROYAL BLUE TOP HEADER
    ========================================================================= */
 .up-topbar {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--up-border);
+  background: rgba(9, 29, 88, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
   padding: max(10px, env(safe-area-inset-top)) 16px 10px;
 }
 
 .up-app-shell.is-auth-view .up-topbar {
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(9, 29, 88, 0.65);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
@@ -117,24 +133,26 @@ p {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--up-primary);
-  color: #ffffff;
+  background: #ffffff;
+  color: #1d4ed8;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .up-app-shell.is-auth-view .up-brand-logo {
   background: #ffffff;
-  color: var(--up-primary);
+  color: #1d4ed8;
 }
 
 .up-brand-name {
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--up-text);
+  color: #ffffff;
   line-height: 1.1;
+  letter-spacing: 0.02em;
 }
 
 .up-app-shell.is-auth-view .up-brand-name {
@@ -143,12 +161,12 @@ p {
 
 .up-brand-sub {
   font-size: 0.7rem;
-  color: var(--up-text-muted);
+  color: #bfdbfe;
   font-weight: 500;
 }
 
 .up-app-shell.is-auth-view .up-brand-sub {
-  color: #cbd5e1;
+  color: #bfdbfe;
 }
 
 .up-topbar-actions {
@@ -163,9 +181,9 @@ p {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: #f1f5f9;
-  border: 1px solid var(--up-border);
-  color: var(--up-text-sub);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,8 +192,8 @@ p {
 }
 
 .up-icon-btn:hover {
-  background: #e2e8f0;
-  color: var(--up-text);
+  background: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
 }
 
 .up-notif-dot {
@@ -202,20 +220,20 @@ p {
   gap: 8px;
   padding: 4px 6px 4px 10px;
   border-radius: 10px;
-  background: #f8fafc;
-  border: 1px solid var(--up-border);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .up-user-name {
   font-size: 0.76rem;
   font-weight: 700;
-  color: var(--up-text);
+  color: #ffffff;
   line-height: 1.1;
 }
 
 .up-user-sub {
   font-size: 0.65rem;
-  color: var(--up-primary);
+  color: #bfdbfe;
   font-family: var(--up-mono);
   font-weight: 600;
 }
@@ -224,9 +242,9 @@ p {
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  background: #fee2e2;
-  color: #dc2626;
-  border: none;
+  background: rgba(239, 68, 68, 0.22);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -235,7 +253,8 @@ p {
 }
 
 .up-logout-btn:hover {
-  background: #fecaca;
+  background: rgba(239, 68, 68, 0.38);
+  color: #ffffff;
 }
 
 /* =========================================================================
@@ -247,6 +266,8 @@ p {
   max-width: 680px;
   margin: 0 auto;
   padding: 20px 16px 40px;
+  transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
 }
 
 .up-main-container.is-login {
@@ -255,6 +276,50 @@ p {
   justify-content: center;
   align-items: center;
   padding: 24px 16px;
+}
+
+/* =========================================================================
+   SWIPE-TO-BACK GESTURE PILL
+   ========================================================================= */
+.up-swipe-back-pill {
+  position: fixed;
+  left: 12px;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(29, 78, 216, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 8px 24px rgba(10, 42, 143, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+  z-index: 9999;
+  transition:
+    background 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.08s ease-out;
+  will-change: transform;
+
+  svg {
+    transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  &.is-ready {
+    background: #2563eb;
+    box-shadow:
+      0 0 0 4px rgba(59, 130, 246, 0.4),
+      0 12px 28px rgba(10, 42, 143, 0.55);
+
+    svg {
+      transform: translateX(-2px) scale(1.12);
+    }
+  }
 }
 
 /* =========================================================================
@@ -268,41 +333,51 @@ p {
   margin-bottom: 16px;
 }
 
+.up-page-header h1 {
+  color: #ffffff !important;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
 .up-back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 8px 13px;
   border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid var(--up-border);
-  color: var(--up-text);
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  backdrop-filter: blur(8px);
 }
 
 .up-back-btn:hover {
-  background: #f1f5f9;
+  background: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
 }
 
 .up-app-shell.is-auth-view .up-back-btn {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.28);
   color: #ffffff;
 }
 
 /* =========================================================================
-   CARDS & ACTION TILES
+   CARDS & ACTION TILES (ROYAL BLUE THEME)
    ========================================================================= */
 .up-card {
-  background: var(--up-surface);
-  color: var(--up-text);
-  border: 1px solid var(--up-border);
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  background: rgba(255, 255, 255, 0.94);
+  color: #0b1f4d;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 16px 40px rgba(5, 20, 75, 0.22);
   padding: 18px;
   width: 100%;
 }
@@ -317,7 +392,7 @@ p {
 
 .up-action-tile {
   background: #ffffff;
-  border: 1.5px solid var(--up-border);
+  border: 1.5px solid #dbeafe;
   border-radius: 14px;
   padding: 14px;
   text-align: left;
@@ -326,22 +401,27 @@ p {
   gap: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: 0 4px 12px rgba(13, 42, 122, 0.08);
+  color: #0b1f4d;
 }
 
 .up-action-tile:hover {
-  border-color: #93c5fd;
-  background: #f8fafc;
-  transform: translateY(-1px);
+  border-color: #3b82f6;
+  background: #eff6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(13, 42, 122, 0.14);
 }
 
 .up-action-tile.primary {
-  background: var(--up-primary);
-  border-color: var(--up-primary);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  border-color: #3b82f6;
   color: #ffffff;
+  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.35);
 }
 
 .up-action-tile.primary:hover {
-  background: var(--up-primary-hover);
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.45);
 }
 
 /* Document Selection Grid */
@@ -448,12 +528,14 @@ p {
 }
 
 .up-btn-primary {
-  background: var(--up-primary);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
   color: #ffffff;
+  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35);
 }
 
 .up-btn-primary:hover {
-  background: var(--up-primary-hover);
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.45);
 }
 
 .up-btn-secondary {
@@ -550,18 +632,43 @@ p {
 .unipass-chip {
   padding: 7px 13px;
   border-radius: 99px;
-  background: #f1f5f9;
-  color: #334155;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
   font-size: 0.76rem;
   font-weight: 600;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
   cursor: pointer;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(8px);
+}
+
+.unipass-chip:hover {
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .unipass-chip.sel {
-  background: var(--up-primary);
+  background: #ffffff;
+  color: #1d4ed8;
+  border-color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.up-card .unipass-chip {
+  background: #eff6ff;
+  color: #1e3a8a;
+  border: 1px solid #bfdbfe;
+}
+
+.up-card .unipass-chip:hover {
+  background: #dbeafe;
+}
+
+.up-card .unipass-chip.sel {
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
   color: #ffffff;
-  border-color: var(--up-primary);
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
 }
 
 /* Upload Dropzone */
