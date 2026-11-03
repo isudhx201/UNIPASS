@@ -649,7 +649,20 @@
                     {{ req.title }}
                   </div>
                   <div style="font-size: 0.72rem; color: #64748b">
-                    #{{ req.id }} • {{ req.date }}
+                    #{{ req.id }} • {{ req.date }} •
+                    <span
+                      :style="
+                        req.format === 'both'
+                          ? 'color: #1d4ed8; font-weight: 700'
+                          : ''
+                      "
+                    >
+                      {{
+                        req.format === 'both'
+                          ? 'PDF + Physical Copy'
+                          : 'Digital PDF'
+                      }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -799,7 +812,20 @@
                 <div
                   style="font-size: 0.74rem; color: #64748b; margin-top: 2px"
                 >
-                  #{{ req.id }} • {{ req.purpose }} • {{ req.date }}
+                  #{{ req.id }} • {{ req.purpose }} • {{ req.date }} •
+                  <span
+                    :style="
+                      req.format === 'both'
+                        ? 'color: #1d4ed8; font-weight: 700'
+                        : ''
+                    "
+                  >
+                    {{
+                      req.format === 'both'
+                        ? 'PDF + Physical Copy'
+                        : 'Digital PDF'
+                    }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1285,6 +1311,67 @@
             </div>
           </div>
 
+          <!-- Physical Copy Needed? (Yes / No) -->
+          <div class="up-card" style="text-align: left">
+            <label class="up-input-label" style="margin-bottom: 8px">
+              Do You Also Need a Physical Printed Copy?
+            </label>
+            <div class="up-doc-grid">
+              <button
+                type="button"
+                class="up-doc-card"
+                :class="{ selected: deliveryFormat === 'digital' }"
+                @click="deliveryFormat = 'digital'"
+              >
+                <span class="up-doc-check">✓</span>
+                <div
+                  style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
+                >
+                  No — Digital PDF Only
+                </div>
+                <div style="font-size: 0.72rem; color: #64748b">
+                  Download QR-verified PDF only
+                </div>
+              </button>
+
+              <button
+                type="button"
+                class="up-doc-card"
+                :class="{ selected: deliveryFormat === 'both' }"
+                @click="deliveryFormat = 'both'"
+              >
+                <span class="up-doc-check">✓</span>
+                <div
+                  style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
+                >
+                  Yes — Physical Copy Too
+                </div>
+                <div style="font-size: 0.72rem; color: #64748b">
+                  Digital PDF + Printed hard copy
+                </div>
+              </button>
+            </div>
+
+            <div
+              v-if="deliveryFormat === 'both'"
+              style="
+                margin-top: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                background: #eff6ff;
+                border: 1px solid #bfdbfe;
+                font-size: 0.75rem;
+                color: #1e3a8a;
+                line-height: 1.45;
+              "
+            >
+              <strong>Physical Copy Collection:</strong> Your printed &amp;
+              stamped hard copy will be prepared at the
+              <strong>Registrar Office (Counter #02)</strong> in addition to
+              your instant digital PDF download.
+            </div>
+          </div>
+
           <!-- Optional Supporting File Upload -->
           <div class="up-card" style="text-align: left">
             <label class="up-input-label" style="margin-bottom: 8px">
@@ -1467,6 +1554,67 @@
               PDF download will unlock once the Registrar Admin approves your
               custom letter.
             </p>
+          </div>
+
+          <!-- Physical Copy Option on Download / Track Screen -->
+          <div class="up-card" style="text-align: left">
+            <label class="up-input-label" style="margin-bottom: 8px">
+              Do You Also Need a Physical Printed Copy?
+            </label>
+            <div class="up-doc-grid">
+              <button
+                type="button"
+                class="up-doc-card"
+                :class="{ selected: activeRequest.format !== 'both' }"
+                @click="setPhysicalCopyOption(activeRequest, false)"
+              >
+                <span class="up-doc-check">✓</span>
+                <div
+                  style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
+                >
+                  No — Digital PDF Only
+                </div>
+                <div style="font-size: 0.72rem; color: #64748b">
+                  Download QR-verified PDF only
+                </div>
+              </button>
+
+              <button
+                type="button"
+                class="up-doc-card"
+                :class="{ selected: activeRequest.format === 'both' }"
+                @click="setPhysicalCopyOption(activeRequest, true)"
+              >
+                <span class="up-doc-check">✓</span>
+                <div
+                  style="font-size: 0.84rem; font-weight: 800; color: #0f172a"
+                >
+                  Yes — Physical Copy Too
+                </div>
+                <div style="font-size: 0.72rem; color: #64748b">
+                  Digital PDF + Printed hard copy
+                </div>
+              </button>
+            </div>
+
+            <div
+              v-if="activeRequest.format === 'both'"
+              style="
+                margin-top: 10px;
+                padding: 10px 12px;
+                border-radius: 10px;
+                background: #eff6ff;
+                border: 1px solid #bfdbfe;
+                font-size: 0.75rem;
+                color: #1e3a8a;
+                line-height: 1.45;
+              "
+            >
+              <strong>✓ Physical Copy Requested:</strong> Collect your printed
+              &amp; stamped hard copy at the
+              <strong>Registrar Office (Counter #02)</strong> with your Student
+              ID ({{ activeRequest.studentId || loginId }}).
+            </div>
           </div>
         </div>
       </section>
@@ -2758,6 +2906,7 @@ function openTrackById(reqId) {
 }
 
 function openNewRequest(isCustomLetter = false) {
+  deliveryFormat.value = 'digital'
   if (isCustomLetter) {
     selectedDoc.value = 'Custom Letter Approval'
     navigateTo('form')
@@ -2765,6 +2914,16 @@ function openNewRequest(isCustomLetter = false) {
     selectedDoc.value = 'Academic Transcript'
     navigateTo('select')
   }
+}
+
+function setPhysicalCopyOption(req, needPhysical) {
+  if (!req) return
+  req.format = needPhysical ? 'both' : 'digital'
+  triggerToast(
+    needPhysical
+      ? 'Physical printed copy requested (Registrar Counter #02)'
+      : 'Updated to Digital PDF only'
+  )
 }
 
 function triggerSupportingFileSelect() {
