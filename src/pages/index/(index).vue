@@ -2934,6 +2934,7 @@ function openNewRequest(isCustomLetter = false) {
 function setPhysicalCopyOption(req, needPhysical) {
   if (!req) return
   req.format = needPhysical ? 'both' : 'digital'
+  broadcastCloudEvent({ op: 'upsert', req: { ...req } })
   triggerToast(
     needPhysical
       ? 'Issuance updated: Digital + Certified Hard Copy (Registrar Counter #02)'
@@ -2988,6 +2989,7 @@ function submitRequest() {
 
   existingRequests.value.unshift(newReq)
   activeRequest.value = newReq
+  broadcastCloudEvent({ op: 'upsert', req: { ...newReq } })
 
   if (isCustom) {
     notificationsList.value.unshift({
@@ -3031,6 +3033,7 @@ function openTrackRequest(req) {
 function deleteRequest(req) {
   if (!req) return
   existingRequests.value = existingRequests.value.filter(r => r.id !== req.id)
+  broadcastCloudEvent({ op: 'delete', id: req.id })
   if (activeRequest.value && activeRequest.value.id === req.id) {
     activeRequest.value = existingRequests.value[0] || {
       id: 'N/A',
@@ -3052,6 +3055,7 @@ function approvePendingRequest(req) {
     req.registrarNote =
       'Custom letter reviewed and approved by Senior Assistant Registrar.'
   }
+  broadcastCloudEvent({ op: 'upsert', req: { ...req } })
 
   notificationsList.value.unshift({
     id: Date.now(),
@@ -3083,6 +3087,7 @@ function rejectRequestByRegistrar(req) {
   if (!req.registrarNote) {
     req.registrarNote = 'Please revise the letter content and resubmit.'
   }
+  broadcastCloudEvent({ op: 'upsert', req: { ...req } })
   notificationsList.value.unshift({
     id: Date.now(),
     channel: 'Portal Alert',
@@ -3979,6 +3984,215 @@ function stopCameraStream() {
   cameraQrLocked.value = false
 }
 
+// =========================================================================
+// MULTI-DEVICE REAL-TIME CLOUD SYNC (NTFY PUB/SUB + BROADCASTCHANNEL)
+// =========================================================================
+const CLOUD_SYNC_TOPIC = 'unipass_uov_portal_sync_2026_v1'
+const CLOUD_SYNC_URL = `https://ntfy.sh/${CLOUD_SYNC_TOPIC}`
+const CLIENT_INSTANCE_ID =
+  'cli_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now()
+
+const processedEventIds = new Set()
+const deletedReqTimestamps = {}
+const requestTimestamps = {}
+
+let syncEventSource = null
+let syncPollInterval = null
+let localBroadcastChannel = null
+let hasPushedInitialLocal = false
+
+function applySyncPayload(evt, isLive = false) {
+  if (!evt || typeof evt !== 'object') return
+  const ts = Number(evt.ts) || Date.now()
+
+  if (evt.op === 'upsert' && evt.req && evt.req.id) {
+    const reqId = evt.req.id
+    const lastDel = deletedReqTimestamps[reqId] || 0
+    if (ts < lastDel) return
+
+    const lastUpd = requestTimestamps[reqId] || 0
+    if (ts < lastUpd) return
+    requestTimestamps[reqId] = ts
+
+    // Always store in issuedArchive so QR verification works across all devices
+    issuedArchive.value[reqId] = { ...evt.req }
+    try {
+      localStorage.setItem(
+        'unipass_issued_archive_v3',
+        JSON.stringify(issuedArchive.value)
+      )
+    } catch {
+      // ignore
+    }
+
+    const idx = existingRequests.value.findIndex(r => r.id === reqId)
+    if (idx !== -1) {
+      const prevStatus = existingRequests.value[idx].status
+      Object.assign(existingRequests.value[idx], evt.req)
+      if (activeRequest.value && activeRequest.value.id === reqId) {
+        Object.assign(activeRequest.value, evt.req)
+      }
+      if (
+        isLive &&
+        evt.clientId !== CLIENT_INSTANCE_ID &&
+        prevStatus !== evt.req.status
+      ) {
+        triggerToast(
+          `Live Sync: #${reqId} (${evt.req.title}) is now ${evt.req.status}`
+        )
+      }
+    } else {
+      existingRequests.value.unshift({ ...evt.req })
+      // Sort descending by numeric ID
+      existingRequests.value.sort((a, b) => {
+        const na = parseInt((a.id || '').replace(/\D+/g, ''), 10) || 0
+        const nb = parseInt((b.id || '').replace(/\D+/g, ''), 10) || 0
+        return nb - na
+      })
+      if (isLive && evt.clientId !== CLIENT_INSTANCE_ID) {
+        triggerToast(
+          `Live Sync: New request #${reqId} (${evt.req.title}) received`
+        )
+      }
+    }
+  } else if (evt.op === 'delete' && evt.id) {
+    const reqId = evt.id
+    const lastUpd = requestTimestamps[reqId] || 0
+    if (ts < lastUpd) return
+    deletedReqTimestamps[reqId] = ts
+
+    const exists = existingRequests.value.some(r => r.id === reqId)
+    if (exists) {
+      existingRequests.value = existingRequests.value.filter(
+        r => r.id !== reqId
+      )
+      if (activeRequest.value && activeRequest.value.id === reqId) {
+        activeRequest.value = existingRequests.value[0] || {
+          id: 'N/A',
+          title: 'No Active Request',
+          status: 'Pending Approval',
+          isCustom: false
+        }
+      }
+    }
+  }
+}
+
+function broadcastCloudEvent(payload) {
+  const evt = {
+    ...payload,
+    clientId: CLIENT_INSTANCE_ID,
+    ts: Date.now()
+  }
+  if (evt.op === 'upsert' && evt.req?.id) {
+    requestTimestamps[evt.req.id] = evt.ts
+  } else if (evt.op === 'delete' && evt.id) {
+    deletedReqTimestamps[evt.id] = evt.ts
+  }
+
+  // 1. Instant cross-tab sync on the same browser
+  if (localBroadcastChannel) {
+    try {
+      localBroadcastChannel.postMessage(evt)
+    } catch {
+      // ignore
+    }
+  }
+
+  // 2. Cloud sync across all devices (phones, laptops, tablets)
+  try {
+    fetch(CLOUD_SYNC_URL, {
+      method: 'POST',
+      body: JSON.stringify(evt)
+    }).catch(() => {
+      // ignore offline error
+    })
+  } catch {
+    // ignore
+  }
+}
+
+async function pullCloudSync() {
+  try {
+    const res = await fetch(`${CLOUD_SYNC_URL}/json?poll=1&since=all`, {
+      cache: 'no-store'
+    })
+    if (!res.ok) return
+    const text = await res.text()
+    const lines = text.split('\n').filter(Boolean)
+    const cloudSeenIds = new Set()
+
+    for (const line of lines) {
+      try {
+        const wrapper = JSON.parse(line)
+        if (wrapper.id && processedEventIds.has(wrapper.id)) {
+          if (wrapper.event === 'message' && wrapper.message) {
+            const parsedMsg = JSON.parse(wrapper.message)
+            if (parsedMsg?.req?.id) cloudSeenIds.add(parsedMsg.req.id)
+          }
+          continue
+        }
+        if (wrapper.id) processedEventIds.add(wrapper.id)
+        if (wrapper.event === 'message' && wrapper.message) {
+          const evt = JSON.parse(wrapper.message)
+          if (evt?.req?.id) cloudSeenIds.add(evt.req.id)
+          applySyncPayload(evt, false)
+        }
+      } catch {
+        // ignore malformed message
+      }
+    }
+
+    // If this device had local custom/new requests not yet in cloud, push them once
+    if (!hasPushedInitialLocal) {
+      hasPushedInitialLocal = true
+      const defaultIds = new Set(defaultRequests.map(d => d.id))
+      for (const localReq of existingRequests.value) {
+        if (
+          localReq?.id &&
+          !cloudSeenIds.has(localReq.id) &&
+          (!defaultIds.has(localReq.id) || localReq.status === 'Ready')
+        ) {
+          broadcastCloudEvent({ op: 'upsert', req: { ...localReq } })
+        }
+      }
+    }
+  } catch {
+    // ignore network errors when offline
+  }
+}
+
+function startLiveCloudStream() {
+  if (typeof EventSource === 'undefined') return
+  try {
+    if (syncEventSource) {
+      syncEventSource.close()
+    }
+    syncEventSource = new EventSource(`${CLOUD_SYNC_URL}/sse`)
+    syncEventSource.onmessage = e => {
+      try {
+        const wrapper = JSON.parse(e.data)
+        if (wrapper.id && processedEventIds.has(wrapper.id)) return
+        if (wrapper.id) processedEventIds.add(wrapper.id)
+        if (wrapper.event === 'message' && wrapper.message) {
+          const evt = JSON.parse(wrapper.message)
+          applySyncPayload(evt, true)
+        }
+      } catch {
+        // ignore
+      }
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function handleVisibilitySync() {
+  if (document.visibilityState === 'visible') {
+    pullCloudSync()
+  }
+}
+
 onMounted(() => {
   window.addEventListener('touchstart', handleTouchStart, { passive: true })
   window.addEventListener('touchmove', handleTouchMove, { passive: true })
@@ -3993,6 +4207,22 @@ onMounted(() => {
   })
 
   window.addEventListener('popstate', handlePopState)
+  document.addEventListener('visibilitychange', handleVisibilitySync)
+
+  if (typeof BroadcastChannel !== 'undefined') {
+    try {
+      localBroadcastChannel = new BroadcastChannel('unipass_cross_tab_sync_v1')
+      localBroadcastChannel.onmessage = e => {
+        if (e.data) applySyncPayload(e.data, true)
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  pullCloudSync()
+  startLiveCloudStream()
+  syncPollInterval = setInterval(pullCloudSync, 7000)
 
   try {
     window.history.replaceState({ unipassView: currentView.value }, '')
@@ -4003,6 +4233,19 @@ onMounted(() => {
 
 onUnmounted(() => {
   stopCameraStream()
+  if (syncEventSource) {
+    syncEventSource.close()
+    syncEventSource = null
+  }
+  if (syncPollInterval) {
+    clearInterval(syncPollInterval)
+    syncPollInterval = null
+  }
+  if (localBroadcastChannel) {
+    localBroadcastChannel.close()
+    localBroadcastChannel = null
+  }
+  document.removeEventListener('visibilitychange', handleVisibilitySync)
   window.removeEventListener('touchstart', handleTouchStart)
   window.removeEventListener('touchmove', handleTouchMove)
   window.removeEventListener('touchend', handleTouchEnd)
