@@ -3,18 +3,18 @@
   --up-royal-2: #2563eb;
   --up-royal-3: #3b82f6;
   --up-royal-dark: #1e3a8a;
-  --up-navy: #0b1f4d;
+  --up-navy: #0f172a;
   --up-sky: #bfdbfe;
   --up-ice: #eff6ff;
 
   --up-primary: #1d4ed8;
   --up-primary-hover: #1e40af;
   --up-primary-light: #eff6ff;
-  --up-bg: #0b2265;
-  --up-surface: rgba(255, 255, 255, 0.94);
-  --up-border: #dbeafe;
-  --up-text: #0b1f4d;
-  --up-text-sub: #1e293b;
+  --up-bg: #f4f7fb;
+  --up-surface: #ffffff;
+  --up-border: #e2e8f0;
+  --up-text: #0f172a;
+  --up-text-sub: #334155;
   --up-text-muted: #64748b;
   --up-font:
     'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
@@ -41,15 +41,11 @@ body {
   min-height: 100dvh;
   overflow-x: hidden;
   font-family: var(--up-font) !important;
-  color: #ffffff;
-  background-color: #0b2265;
-  background-image:
-    radial-gradient(1100px 650px at 15% 10%, #2563eb 0%, transparent 60%),
-    radial-gradient(900px 600px at 85% 90%, #1e3a8a 0%, transparent 60%),
-    linear-gradient(165deg, #091d58 0%, #1d4ed8 50%, #1e3a8a 100%);
-  background-attachment: fixed;
+  color: var(--up-text);
+  background-color: var(--up-bg);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
   line-height: 1.5;
 }
 
@@ -61,7 +57,7 @@ h5,
 h6 {
   margin: 0;
   font-family: var(--up-font);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.02em;
 }
@@ -75,43 +71,54 @@ p {
 }
 
 /* =========================================================================
-   ROYAL BLUE APP SHELL
+   ROYAL BLUE HEADER + SOFT LIGHT WORKSPACE APP SHELL
    ========================================================================= */
 .up-app-shell {
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: transparent;
-  color: #ffffff;
+  background-color: #f4f7fb;
+  background-image: radial-gradient(
+    900px 320px at 50% 0%,
+    rgba(29, 78, 216, 0.07) 0%,
+    transparent 70%
+  );
+  color: var(--up-text);
 }
 
 .up-app-shell.is-auth-view {
-  background: transparent;
+  background-color: #0b2265;
+  background-image:
+    radial-gradient(1100px 650px at 15% 10%, #2563eb 0%, transparent 60%),
+    radial-gradient(900px 600px at 85% 90%, #1e3a8a 0%, transparent 60%),
+    linear-gradient(165deg, #091d58 0%, #1d4ed8 50%, #1e3a8a 100%);
   color: #ffffff;
 }
 
 /* =========================================================================
-   FROSTED ROYAL BLUE TOP HEADER
+   EXECUTIVE ROYAL BLUE TOP HEADER
    ========================================================================= */
 .up-topbar {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(9, 29, 88, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(135deg, #0b2265 0%, #163ca8 55%, #1d4ed8 100%);
+  box-shadow: 0 2px 12px rgba(11, 34, 101, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   padding: max(10px, env(safe-area-inset-top)) 16px 10px;
 }
 
 .up-app-shell.is-auth-view .up-topbar {
-  background: rgba(9, 29, 88, 0.65);
+  background: rgba(9, 29, 88, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .up-topbar-inner {
-  max-width: 720px;
+  max-width: 680px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -139,34 +146,21 @@ p {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.up-app-shell.is-auth-view .up-brand-logo {
-  background: #ffffff;
-  color: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 }
 
 .up-brand-name {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 800;
   color: #ffffff;
   line-height: 1.1;
   letter-spacing: 0.02em;
 }
 
-.up-app-shell.is-auth-view .up-brand-name {
-  color: #ffffff;
-}
-
 .up-brand-sub {
-  font-size: 0.7rem;
+  font-size: 0.69rem;
   color: #bfdbfe;
   font-weight: 500;
-}
-
-.up-app-shell.is-auth-view .up-brand-sub {
-  color: #bfdbfe;
 }
 
 .up-topbar-actions {
@@ -181,8 +175,8 @@ p {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -192,7 +186,7 @@ p {
 }
 
 .up-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.24);
   color: #ffffff;
 }
 
@@ -207,11 +201,11 @@ p {
   background: #ef4444;
   color: #ffffff;
   font-size: 0.62rem;
-  font-weight: 800;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ffffff;
+  border: 2px solid #0b2265;
 }
 
 .up-user-chip {
@@ -220,19 +214,19 @@ p {
   gap: 8px;
   padding: 4px 6px 4px 10px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .up-user-name {
-  font-size: 0.76rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: #ffffff;
   line-height: 1.1;
 }
 
 .up-user-sub {
-  font-size: 0.65rem;
+  font-size: 0.64rem;
   color: #bfdbfe;
   font-family: var(--up-mono);
   font-weight: 600;
@@ -242,9 +236,9 @@ p {
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  background: rgba(239, 68, 68, 0.22);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fecdd3;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -253,7 +247,8 @@ p {
 }
 
 .up-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.38);
+  background: #ef4444;
+  border-color: #ef4444;
   color: #ffffff;
 }
 
@@ -270,12 +265,46 @@ p {
   will-change: transform;
 }
 
+.up-main-container > section {
+  animation: upViewFadeIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes upViewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .up-main-container.is-login {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 24px 16px;
+}
+
+/* =========================================================================
+   ROYAL BLUE WELCOME BANNER (DASHBOARD HERO)
+   ========================================================================= */
+.up-welcome-banner {
+  background: linear-gradient(135deg, #0b2265 0%, #1d4ed8 60%, #2563eb 100%);
+  border-radius: 16px;
+  padding: 18px 20px;
+  color: #ffffff;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  box-shadow:
+    0 10px 26px rgba(11, 34, 101, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 /* =========================================================================
@@ -334,50 +363,45 @@ p {
 }
 
 .up-page-header h1 {
-  color: #ffffff !important;
-  font-size: 1.15rem;
-  font-weight: 800;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  color: #0f172a !important;
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
 }
 
 .up-back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 13px;
+  padding: 7px 13px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  color: #ffffff;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .up-back-btn:hover {
-  background: rgba(255, 255, 255, 0.28);
-  color: #ffffff;
-}
-
-.up-app-shell.is-auth-view .up-back-btn {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.28);
-  color: #ffffff;
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1d4ed8;
 }
 
 /* =========================================================================
-   CARDS & ACTION TILES (ROYAL BLUE THEME)
+   CARDS & ACTION TILES (PROFESSIONAL ENTERPRISE FINISH)
    ========================================================================= */
 .up-card {
-  background: rgba(255, 255, 255, 0.94);
-  color: #0b1f4d;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 18px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 16px 40px rgba(5, 20, 75, 0.22);
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.04),
+    0 6px 20px rgba(15, 23, 42, 0.03);
   padding: 18px;
   width: 100%;
 }
@@ -387,41 +411,83 @@ p {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .up-action-tile {
   background: #ffffff;
-  border: 1.5px solid #dbeafe;
+  border: 1px solid #e2e8f0;
   border-radius: 14px;
-  padding: 14px;
+  padding: 14px 15px;
   text-align: left;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 12px rgba(13, 42, 122, 0.08);
-  color: #0b1f4d;
+  transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  color: #0f172a;
 }
 
 .up-action-tile:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: #93c5fd;
+  background: #ffffff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(13, 42, 122, 0.14);
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.09);
+}
+
+.up-tile-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+.up-tile-arrow {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  transition:
+    transform 0.18s ease,
+    color 0.18s ease;
+  margin-top: 2px;
+}
+
+.up-action-tile:hover .up-tile-arrow {
+  transform: translateX(3px);
+  color: #1d4ed8;
 }
 
 .up-action-tile.primary {
   background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-  border-color: #3b82f6;
+  border-color: #1d4ed8;
   color: #ffffff;
-  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.35);
+  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.25);
+}
+
+.up-action-tile.primary .up-tile-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.up-action-tile.primary .up-tile-arrow {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .up-action-tile.primary:hover {
   background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
-  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.45);
+  box-shadow: 0 8px 24px rgba(29, 78, 216, 0.35);
+}
+
+.up-action-tile.primary:hover .up-tile-arrow {
+  color: #ffffff;
 }
 
 /* Document Selection Grid */
@@ -434,25 +500,26 @@ p {
 .up-doc-card {
   position: relative;
   background: #ffffff;
-  border: 1.5px solid var(--up-border);
-  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 14px;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.16s ease;
 }
 
 .up-doc-card:hover {
   border-color: #93c5fd;
+  background: #f8fafc;
 }
 
 .up-doc-card.selected {
-  border-color: var(--up-primary);
+  border-color: #1d4ed8;
   background: #eff6ff;
-  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.12);
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.14);
 }
 
 .up-doc-check {
@@ -465,7 +532,7 @@ p {
   background: var(--up-primary);
   color: #ffffff;
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -484,13 +551,16 @@ p {
   gap: 12px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid var(--up-border);
+  border: 1px solid #e2e8f0;
   background: #ffffff;
-  transition: border-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .up-req-item:hover {
-  border-color: #cbd5e1;
+  border-color: #bfdbfe;
+  box-shadow: 0 2px 10px rgba(29, 78, 216, 0.05);
 }
 
 .up-ico-box {
@@ -498,7 +568,8 @@ p {
   height: 36px;
   border-radius: 10px;
   background: #eff6ff;
-  color: var(--up-primary);
+  color: #1d4ed8;
+  border: 1px solid #dbeafe;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -513,10 +584,10 @@ p {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 11px 16px;
-  border-radius: 11px;
-  font-size: 0.82rem;
-  font-weight: 700;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -530,12 +601,12 @@ p {
 .up-btn-primary {
   background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35);
+  box-shadow: 0 3px 10px rgba(29, 78, 216, 0.25);
 }
 
 .up-btn-primary:hover {
   background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
-  box-shadow: 0 6px 18px rgba(29, 78, 216, 0.45);
+  box-shadow: 0 5px 14px rgba(29, 78, 216, 0.35);
 }
 
 .up-btn-secondary {
@@ -550,8 +621,12 @@ p {
 
 .up-btn-soft-blue {
   background: #eff6ff;
-  color: var(--up-primary);
+  color: #1d4ed8;
   border-color: #bfdbfe;
+}
+
+.up-btn-soft-blue:hover {
+  background: #dbeafe;
 }
 
 .up-btn-success {
@@ -560,53 +635,64 @@ p {
 }
 
 .up-btn-danger-soft {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+.up-btn-danger-soft:hover {
   background: #fff1f2;
   color: #e11d48;
   border-color: #fecdd3;
 }
 
-/* Badges */
+/* Badges with subtle status dots */
 .up-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
+  gap: 5px;
+  padding: 3px 9px;
   border-radius: 99px;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
 }
 
 .up-badge-success {
-  background: #dcfce7;
-  color: #15803d;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
 }
 
 .up-badge-amber {
-  background: #fef3c7;
+  background: #fffbeb;
   color: #b45309;
+  border: 1px solid #fde68a;
 }
 
 .up-badge-blue {
-  background: #dbeafe;
+  background: #eff6ff;
   color: #1d4ed8;
+  border: 1px solid #bfdbfe;
 }
 
 .up-badge-purple {
-  background: #f3e8ff;
+  background: #f5f3ff;
   color: #6d28d9;
+  border: 1px solid #ddd6fe;
 }
 
 .up-badge-rose {
-  background: #ffe4e6;
+  background: #fff1f2;
   color: #be123c;
+  border: 1px solid #fecdd3;
 }
 
 /* Inputs */
 .up-input-label {
   display: block;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: #334155;
   margin-bottom: 5px;
 }
@@ -615,16 +701,19 @@ p {
   width: 100%;
   padding: 10px 13px;
   border-radius: 10px;
-  border: 1.5px solid #cbd5e1;
+  border: 1px solid #cbd5e1;
   background: #ffffff;
   color: var(--up-text);
-  font-size: 0.86rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 500;
   outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .up-input:focus {
-  border-color: var(--up-primary);
+  border-color: #1d4ed8;
   box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
 }
 
@@ -632,43 +721,44 @@ p {
 .unipass-chip {
   padding: 7px 13px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+  background: #ffffff;
+  color: #334155;
   font-size: 0.76rem;
   font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid #cbd5e1;
   cursor: pointer;
   transition: all 0.15s ease;
-  backdrop-filter: blur(8px);
 }
 
 .unipass-chip:hover {
-  background: rgba(255, 255, 255, 0.28);
+  border-color: #93c5fd;
+  background: #f8fafc;
 }
 
 .unipass-chip.sel {
-  background: #ffffff;
-  color: #1d4ed8;
-  border-color: #ffffff;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 3px 10px rgba(29, 78, 216, 0.22);
 }
 
 .up-card .unipass-chip {
-  background: #eff6ff;
-  color: #1e3a8a;
-  border: 1px solid #bfdbfe;
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #e2e8f0;
 }
 
 .up-card .unipass-chip:hover {
-  background: #dbeafe;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
 }
 
 .up-card .unipass-chip.sel {
   background: linear-gradient(135deg, #1d4ed8, #2563eb);
   color: #ffffff;
   border-color: #1d4ed8;
-  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+  box-shadow: 0 3px 10px rgba(29, 78, 216, 0.22);
 }
 
 /* Upload Dropzone */

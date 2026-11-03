@@ -473,37 +473,38 @@
           isLoggedIn && activeRole === 'student' && currentView === 'dashboard'
         "
       >
-        <!-- Simple Greeting Row -->
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
-          "
-        >
+        <!-- Royal Blue Welcome Banner -->
+        <div class="up-welcome-banner">
           <div style="text-align: left">
-            <h1
+            <div
               style="
-                font-size: 1.35rem;
-                color: #ffffff;
-                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+                font-size: 0.68rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: #93c5fd;
+                margin-bottom: 2px;
               "
             >
+              Student Document Workspace
+            </div>
+            <h1 style="font-size: 1.28rem; font-weight: 700; color: #ffffff">
               Hello, {{ studentName }}
             </h1>
-            <p style="font-size: 0.78rem; color: #bfdbfe">
-              Student ID: <strong style="color: #ffffff">{{ loginId }}</strong>
+            <p style="font-size: 0.76rem; color: #bfdbfe; margin-top: 2px">
+              Registration No:
+              <strong style="color: #ffffff; font-family: var(--up-mono)">{{
+                loginId
+              }}</strong>
             </p>
           </div>
           <div style="display: flex; gap: 6px; flex-wrap: wrap">
             <span
               class="up-badge"
               style="
-                background: rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.16);
                 color: #ffffff;
-                border: 1px solid rgba(255, 255, 255, 0.35);
+                border: 1px solid rgba(255, 255, 255, 0.25);
               "
             >
               Total: {{ existingRequests.length }}
@@ -511,32 +512,35 @@
             <span
               class="up-badge"
               style="
-                background: rgba(34, 197, 94, 0.25);
-                color: #86efac;
-                border: 1px solid rgba(34, 197, 94, 0.4);
+                background: rgba(16, 185, 129, 0.22);
+                color: #a7f3d0;
+                border: 1px solid rgba(52, 211, 153, 0.38);
               "
             >
-              Ready: {{ readyCount }}
+              ● Ready: {{ readyCount }}
             </span>
           </div>
         </div>
 
-        <!-- 4 Clean Action Cards (2x2 Grid) -->
+        <!-- 4 Clean Action Cards (2x2 Grid with Soft Icon Badges & Arrows) -->
         <div class="up-action-grid">
           <button
             type="button"
             class="up-action-tile primary"
             @click="openNewRequest(false)"
           >
-            <svg width="22" height="22"><use href="#i-plus" /></svg>
             <div>
-              <div style="font-size: 0.88rem; font-weight: 800">
+              <div class="up-tile-icon">
+                <svg width="20" height="20"><use href="#i-plus" /></svg>
+              </div>
+              <div style="font-size: 0.86rem; font-weight: 700">
                 Request Document
               </div>
-              <div style="font-size: 0.72rem; opacity: 0.85">
+              <div style="font-size: 0.72rem; opacity: 0.86; margin-top: 2px">
                 Instant auto-generated PDF
               </div>
             </div>
+            <span class="up-tile-arrow">→</span>
           </button>
 
           <button
@@ -544,17 +548,18 @@
             class="up-action-tile"
             @click="openNewRequest(true)"
           >
-            <svg width="22" height="22" style="color: #4f46e5">
-              <use href="#i-pen" />
-            </svg>
             <div>
-              <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a">
+              <div class="up-tile-icon">
+                <svg width="19" height="19"><use href="#i-pen" /></svg>
+              </div>
+              <div style="font-size: 0.86rem; font-weight: 700; color: #0f172a">
                 Custom Letter
               </div>
-              <div style="font-size: 0.72rem; color: #64748b">
+              <div style="font-size: 0.72rem; color: #64748b; margin-top: 2px">
                 Submit for Admin approval
               </div>
             </div>
+            <span class="up-tile-arrow">→</span>
           </button>
 
           <button
@@ -562,31 +567,33 @@
             class="up-action-tile"
             @click="navigateTo('requests')"
           >
-            <svg width="22" height="22" style="color: #1d4ed8">
-              <use href="#i-doc" />
-            </svg>
             <div>
-              <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a">
+              <div class="up-tile-icon">
+                <svg width="19" height="19"><use href="#i-doc" /></svg>
+              </div>
+              <div style="font-size: 0.86rem; font-weight: 700; color: #0f172a">
                 Existing Requests ({{ existingRequests.length }})
               </div>
-              <div style="font-size: 0.72rem; color: #64748b">
-                View & download documents
+              <div style="font-size: 0.72rem; color: #64748b; margin-top: 2px">
+                View &amp; download records
               </div>
             </div>
+            <span class="up-tile-arrow">→</span>
           </button>
 
           <button type="button" class="up-action-tile" @click="openQrVerifier">
-            <svg width="22" height="22" style="color: #059669">
-              <use href="#i-qr" />
-            </svg>
             <div>
-              <div style="font-size: 0.88rem; font-weight: 800; color: #0f172a">
+              <div class="up-tile-icon">
+                <svg width="19" height="19"><use href="#i-qr" /></svg>
+              </div>
+              <div style="font-size: 0.86rem; font-weight: 700; color: #0f172a">
                 Verify QR Code
               </div>
-              <div style="font-size: 0.72rem; color: #64748b">
+              <div style="font-size: 0.72rem; color: #64748b; margin-top: 2px">
                 Scan via camera or upload
               </div>
             </div>
+            <span class="up-tile-arrow">→</span>
           </button>
         </div>
 
@@ -685,6 +692,7 @@
                         : 'up-badge-amber'
                   "
                 >
+                  ●
                   {{
                     req.status === 'Pending Approval' ? 'Pending' : req.status
                   }}
@@ -2016,18 +2024,23 @@
 
     <!-- FOOTER -->
     <footer
-      style="
-        padding: 16px;
-        text-align: center;
-        font-size: 0.75rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.15);
-        background: rgba(9, 29, 88, 0.75);
-        backdrop-filter: blur(12px);
-        color: #bfdbfe;
+      style="padding: 16px; text-align: center; font-size: 0.75rem"
+      :style="
+        !isLoggedIn && currentView === 'login'
+          ? 'border-top: 1px solid rgba(255, 255, 255, 0.15); background: rgba(9, 29, 88, 0.75); color: #bfdbfe'
+          : 'border-top: 1px solid #e2e8f0; background: #ffffff; color: #64748b'
       "
     >
       UNIPASS — University of Vavuniya Academic Document Portal •
-      <strong style="color: #ffffff"> “No Queue, Just Click” </strong>
+      <strong
+        :style="
+          !isLoggedIn && currentView === 'login'
+            ? 'color: #ffffff'
+            : 'color: #1d4ed8'
+        "
+      >
+        “No Queue, Just Click”
+      </strong>
     </footer>
   </div>
 </template>
